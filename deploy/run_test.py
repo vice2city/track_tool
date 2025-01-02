@@ -6,6 +6,7 @@ import threading
 
 import mot2coco
 
+
 def read_stream(stream, prefix):
     """
     读取流并打印每一行。
@@ -16,16 +17,18 @@ def read_stream(stream, prefix):
     """
     for line in stream:
         if 'mmengine - INFO' in line or prefix == 'STDERR':
-        # if prefix == 'STDERR':
+            # if prefix == 'STDERR':
             print(f"{prefix}: {line.strip()}")
 
-in_folder = '/code/data/datasets/SAT-MTB_ship/'
-video_names = os.listdir(os.path.join(in_folder, 'test'))
-data_list = random.sample(video_names, 3)
 
-mot2coco.get_annotation(in_folder, '/code/data/datasets/SAT-MTB_ship/annotations', data_list)
+# isIR = False
+# in_folder = '/code/data/datasets/SAT-MTB_ship/'
+# video_names = os.listdir(os.path.join(in_folder, 'test'))
+# data_list = random.sample(video_names, 3)
+#
+# mot2coco.get_annotation(in_folder, '/code/data/datasets/SAT-MTB_ship/annotations', data_list, isIR)
 
-command = 'python tools/test_tracking.py custom_configs/bytetrack_train.py --checkpoint /code/data/checkpoints/bytetrack_plane.pth --work-dir /code/data/outputs/bytetrack_plane/test'
+command = 'python tools/test_tracking.py custom_configs/bytetrack_train.py --checkpoint /data1/zhuhongchun/outputs/bytetrack_ship3/epoch_69.pth --work-dir /data1/zhuhongchun/outputs/bytetrack_ship3/test'
 process = subprocess.Popen(
     command,
     stdout=subprocess.PIPE,
@@ -46,7 +49,7 @@ stderr_thread.join()
 return_code = process.wait()
 print(f"Process finished with return code: {return_code}")
 
-file_path = '/data/code/outputs/bytetrack_plane/metric_results/default-tracker/pedestrian_detailed.csv'
+file_path = '/data1/zhuhongchun/outputs/bytetrack_ship3/metric_results/default-tracker/pedestrian_detailed.csv'
 column_indices = [0, 2, 4, 5, 11, 23, 24, 25, 26]
 with open(file_path, 'r', encoding='utf-8', newline='') as csvfile:
     reader = csv.reader(csvfile)  # 创建一个 csv reader 对象

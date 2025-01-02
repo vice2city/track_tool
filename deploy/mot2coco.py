@@ -55,7 +55,7 @@ def parse_gts(gts, is_mot15):
 
 
 
-def get_annotation(input_path, output, data_list):
+def get_annotation(input_path, output, data_list, isIR=False):
     if not osp.isdir(output):
         os.makedirs(output)
 
@@ -77,7 +77,10 @@ def get_annotation(input_path, output, data_list):
         infos = mmengine.list_from_file(f'{video_folder}/seqinfo.ini')
         # video-level infos
         assert video_name == infos[1].strip().split('=')[1]
-        img_folder = infos[2].strip().split('=')[1]
+        if isIR:
+            img_folder = 'img3'
+        else:
+            img_folder = infos[2].strip().split('=')[1]
         img_names = os.listdir(f'{video_folder}/{img_folder}')
         img_names = sorted(img_names)
         fps = int(infos[3].strip().split('=')[1])

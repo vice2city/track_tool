@@ -1,15 +1,14 @@
 from moviepy.editor import VideoFileClip, concatenate_videoclips
 
 
-def merge_videos(video1_path, video2_path, m):
+def merge_videos(video1_path, video2_path, m, angle):
     """
   将两个 MP4 视频拼接在一起。
 
   Args:
+    angle:
     video1_path: 第一个视频的路径。
     video2_path: 第二个视频的路径。
-    n1: 第一个视频取的前 n1 帧。
-    n2: 第二个视频取的后 n2 帧。
     m:  两个视频重叠的帧数。
 
   Returns:
@@ -19,6 +18,9 @@ def merge_videos(video1_path, video2_path, m):
     # 加载视频
     video1 = VideoFileClip(video1_path)
     video2 = VideoFileClip(video2_path)
+
+    # 旋转视频2
+    video2 = video2.rotate(angle, expand=False)
 
     # 计算帧率
     fps1 = video1.fps
@@ -38,12 +40,12 @@ def merge_videos(video1_path, video2_path, m):
     return final_clip
 
 
-index = 45
+index = 19
 video1_path = f"/data1/zhuhongchun/outputs/bytetrack_ship/demo/demo{index}.mp4"
 video2_path = f"/data1/zhuhongchun/outputs/bytetrack_ship3/demo/demo{index}.mp4"
 m = 30
 
-merged_video = merge_videos(video1_path, video2_path, m)
+merged_video = merge_videos(video1_path, video2_path, m, 90)
 
 # 保存拼接后的视频
 merged_video.write_videofile(f"data/demo{index}c.mp4")
