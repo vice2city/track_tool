@@ -1,51 +1,72 @@
-from moviepy.editor import VideoFileClip, concatenate_videoclips
+import cv2
 
-
-def merge_videos(video1_path, video2_path, m, angle):
+def crop_center(img, cropx, cropy):
     """
-  将两个 MP4 视频拼接在一起。
+    裁剪图像中心部分。
 
-  Args:
-    angle:
-    video1_path: 第一个视频的路径。
-    video2_path: 第二个视频的路径。
-    m:  两个视频重叠的帧数。
+    Args:
+        img: 要裁剪的图像。
+        cropx: 裁剪后的宽度。
+        cropy: 裁剪后的高度。
 
-  Returns:
-    拼接后的视频剪辑对象。
-  """
-
-    # 加载视频
-    video1 = VideoFileClip(video1_path)
-    video2 = VideoFileClip(video2_path)
-
-    # 旋转视频2
-    video2 = video2.rotate(angle, expand=False)
-
-    # 计算帧率
-    fps1 = video1.fps
-    fps2 = video2.fps
-
-    # 计算时间
-    t1 = video1.duration / 2 + m / fps1
-    t2 = video2.duration / 2 + m / fps2
-
-    # 截取视频片段
-    clip1 = video1.subclip(0, t1)
-    clip2 = video2.subclip(video2.duration - t2, video2.duration)
-
-    # 拼接视频
-    final_clip = concatenate_videoclips([clip1, clip2])
-
-    return final_clip
+    Returns:
+        裁剪后的图像。
+    """
+    y, x, _ = img.shape
+    startx = x // 2 - (cropx // 2)
+    starty = y // 2 - (cropy // 2)
+    return img[starty:starty + cropy, startx:startx + cropx]
 
 
-index = 19
-video1_path = f"/data1/zhuhongchun/outputs/bytetrack_ship/demo/demo{index}.mp4"
-video2_path = f"/data1/zhuhongchun/outputs/bytetrack_ship3/demo/demo{index}.mp4"
-m = 30
+def concat_videos(video1_path, video2_path, output_path):
+    """
+    读取两段视频，拼接两个视频。
 
-merged_video = merge_videos(video1_path, video2_path, m, 90)
+    Args:
+      video1_path: 第一段视频的路径。
+      video2_path: 第二段视频的路径。
+      output_path: 输出视频的路径。
+    """
 
-# 保存拼接后的视频
-merged_video.write_videofile(f"data/demo{index}c.mp4")
+    cap1 = cv2.VideoCapture(video1_path)
+    cap2 = cv2.VideoCapture(video2_path)
+
+    # 裁剪后的尺寸
+    crop_size = 600
+
+    # 创建视频写入器
+    fourcc = cv2.VideoWriter_fourcc(*'mp4v')  # 使用 mp4v 编码器
+    out = cv2.VideoWriter(output_path, fourcc, 30, (crop_size, crop_size))
+
+    # 处理第一个视频
+    while cap1.isOpened():
+        ret, frame = cap1.read()
+        if not ret:
+            break
+
+        # 裁剪第一个视频
+        frame = crop_center(frame, crop_size, crop_size)
+
+        out.write(frame)
+
+    # 处理第二个视频
+    while cap2.isOpened():
+        ret, frame = cap2.read()
+        if not ret:
+            break
+
+        # 裁剪第二个视频
+        frame = crop_center(frame, crop_size, crop_size)
+        # 旋转第二个视频90度 (顺时针)
+        rotated_frame = cv2.rotate(frame, cv2.ROTATE_90_CLOCKWISE)
+
+        out.write(rotated_frame)
+
+    # 释放资源
+    cap1.release()
+    cap2.release()
+    out.release()
+    print(f"Video saved to {output_path}")
+
+# 使用示例
+concat_videos('/code/data/demo/demo1.mp4', '/code/data/demo/demo2.mp4', '/code/data/demo19.mp4')

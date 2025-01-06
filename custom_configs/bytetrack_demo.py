@@ -3,7 +3,7 @@ _base_ = ['../configs/yolox/yolox_x_8xb8-300e_coco.py']
 dataset_type = 'MOTChallengeDataset'
 data_root = '/data/datasets/SAT-MTB_ship/' # 使用的数据集
 
-img_scale = (1000, 800)  # weight, height
+img_scale = (600, 600)  # weight, height
 batch_size = 2
 
 metainfo = {
