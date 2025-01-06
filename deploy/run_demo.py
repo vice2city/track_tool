@@ -1,6 +1,6 @@
 import subprocess
 import threading
-
+import random
 import video_combine
 
 
@@ -16,14 +16,15 @@ def read_stream(stream, prefix):
         if prefix == 'STDOUT' or prefix == 'STDERR':
             print(f"{prefix}: {line.strip()}")
 
+video_index = random.choice([19,29,45,46])
 
 video_path1 = '/code/data/demo/demo1.mp4'
 video_path2 = '/code/data/demo/demo2.mp4'
-img_folder1 = '/code/data/datasets/SAT-MTB_ship3/19/img'
-img_folder2 = '/code/data/datasets/SAT-MTB_ship3/19/img3'
+img_folder1 = f'/code/data/datasets/SAT-MTB_ship3/{video_index}/img'
+img_folder2 = f'/code/data/datasets/SAT-MTB_ship3/{video_index}/img3'
 checkpoint_path1 = '/code/data/checkpoints/bytetrack_ship.pth'
 checkpoint_path2 = '/code/data/checkpoints/bytetrack_ship3.pth'
-output_path = '/code/data/demo19.mp4'
+output_path = f'/code/data/demo{video_index}.mp4'
 
 command1 = f'python demo/mot_demo.py {img_folder1} custom_configs/bytetrack_demo.py --checkpoint {checkpoint_path1} --score-thr 0.5 --device cpu --out {video_path1} --fps 30'
 command2 = f'python demo/mot_demo.py {img_folder2} custom_configs/bytetrack_demo.py --checkpoint {checkpoint_path2} --score-thr 0.5 --device cpu --out {video_path2} --fps 30'
